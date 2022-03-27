@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>FIAPump: Microfluidic Pump</title>
+
+    <link rel="stylesheet" href="style.css">
+
+
+    <!-- SCRIPTS -->
+    <script src="scripts.js"></script>
+</head>
+
+<body>
+    <div class="maincontainer">
+        <div class="top-container">
+            <div id="menu" class="sidebar">
+                <div class="sidebar-menu-header">Menu</div>
+                <a id="menu1" class="sidebarmenu" href="#" onclick="sidebarMenuSelected(1); openPage(1)">
+                    <span class="icon align-center" id="icon-home"></span>
+                    <span class="align-center">Home</span>
+                </a>
+                <a id="menu2" class="sidebarmenu" href="#" onclick="sidebarMenuSelected(2); openPage(2)">
+                    <span class="icon align-center" id="icon-setup"></span>
+                    <span class="align-center">Setup</span></a>
+            </div>
+
+            <div class="window" id="home-window">
+                <div class="home-window-content" id="seq-input-window">
+
+                    <!-- Sequence Review -->
+                    <div class="content" id="sequence-container">
+                        <div class="sequence-toolbar">
+                            <span title="Add new sequence" class="add-button icon icon-toolbar icon-add"
+                                onclick="createNewSequenceButton();"></span>
+                            <span title="Delete Sequence" class="delete-button icon icon-toolbar icon-delete"
+                                onclick="deleteSequence();"></span>
+                            <span title="Delete All Sequence"
+                                class="delete-all-button icon icon-toolbar icon-delete-all"
+                                onclick="deleteAllSequenceButton();"></span>
+                            <button type="button" class="toolbar-button" id="save-button" onclick="saveSequenceData();">
+                                <span class="icon icon-save align-center"></span>
+                                <span class="align-center">Save</span> </button>
+                            <br>
+                            <button type="button" class="toolbar-button" id="load-button" onclick="loadSequenceData();">
+                                <span class="icon icon-load align-center"></span>
+                                <span class="align-center">Load</span> </button>
+                        </div>
+                        <div class="sequence-table-container-top-layer">
+                            <div class="sequence-table-container">
+                                <table class="sequence-table">
+                                    <thead class="sequence-table-header">
+                                        <tr class="sequence-table-header-row">
+                                            <th class="col-sequence">Seq</th>
+                                            <th>Pump</th>
+                                            <th>Dir</th>
+                                            <th>Flow (&microL/min)</th>
+                                            <th>Duration (s)</th>
+                                            <th>Volume (&microL)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="sequence-table-list" id="seq_review">
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End of Sequence Review -->
+
+                    <!-- Sequence Input -->
+                    <div class="content" id="sequence-input-container">
+                        <label id="sequence-label" style="font-size: 18px;">Sequence 1</label> <br> <br>
+
+                        <div class="sequence-input-parameter">
+                            <label>Pump</label> <br>
+                            <input type="radio" id="pump1" name="pump" value="1" oninput="pumpSelect(1);" checked>
+                            <label for="pump1">1</label>
+                            <input type="radio" id="pump2" name="pump" value="2" oninput="pumpSelect(2);">
+                            <label for="pump2">2</label>
+                            <input type="radio" id="pump3" name="pump" value="3" oninput="pumpSelect(3);">
+                            <label for="pump3">3</label>
+                            <input type="radio" id="pump0" name="pump" value="0" oninput="pumpSelect(0);">
+                            <label for="pump0">Idle</label><br>
+                        </div>
+                        <div class="mode-container" id="mode-run">
+                            <div class="sequence-input-parameter" id="dir-input">
+                                <label>Direction</label> <br>
+                                <input type="radio" id="dir0" name="dir" value="0" checked>
+                                <label for="dir1">Forward</label>
+                                <input type="radio" id="dir1" name="dir" value="1">
+                                <label for="dir1">Backward</label><br>
+                            </div>
+
+                            <div class="sequence-input-parameter" id="flow-input">
+                                <label for="flowrate">Flow Rate</label> <br>
+                                <input type="number" id="flowrate" name="flowrate" min="0" max="10000" value="0">
+                                <label for="flowrate">&microL/min</label><br>
+                            </div>
+                            <div id="voldur_container">
+                                <select id="voldur" oninput="volDurSelect();" style="margin-bottom: 10px;">
+                                    <option value="0" selected>Duration</option>
+                                    <option value="1">Volume</option>
+                                </select><br>
+                            </div>
+                            <div class="sequence-input-parameter">
+                                <div id="durationinput" class="duration-input">
+                                    <label>Duration</label><br>
+                                    <input type="number" id="duration" name="duration" min="0" max="36000" value="0">
+                                    <label for="duration">s</label>
+                                </div>
+                                <div id="volumeinput" class="volume-input">
+                                    <label>Volume</label><br>
+                                    <input type="number" id="volume" name="volume" min="0" max="99999" value="0">
+                                    <label for="volume">&microL</label>
+                                </div>
+                            </div>
+                        </div> <br>
+                        
+                        <div class='error-message' id="error-message" style="color: red"></div>
+                        <br>
+
+                        <button type="button" class="button-type-1 sequence-input-button" id="savesequencebtn"
+                            onclick="saveSequenceButton();">
+                            Save Sequence</button>
+                        <button type="button" class="button-type-1 sequence-input-button" id="addandsavesequence"
+                            onclick="addAndSaveSequenceButton();">
+                            Save and Add New Sequence</button>
+                        <br>
+                        <button type="button" class="button-type-1 sequence-input-button" id="senddata"
+                            onclick="startSequenceButton();">
+                            Start Sequence</button>
+                        <br>
+
+
+                        <div class="sequence-input-parameter">
+
+                            <!-- Pump information -->
+                            <span><b>Information</b></span>
+                            <table class="pump-information-table">
+                                <tr>
+                                    <td class="pump-information-table-cell-1">Pump 1</td>
+                                    <td class="pump-information-table-cell-2">:</td>
+                                    <td class="pump-information-table-cell-3">Liquid Pump for Sample</td>
+                                </tr>
+                                <tr>
+                                    <td class="pump-information-table-cell-1">Pump 2</td>
+                                    <td class="pump-information-table-cell-2">:</td>
+                                    <td class="pump-information-table-cell-3">Liquid Pump for Flushing Agent</td>
+                                </tr>
+                                <tr>
+                                    <td class="pump-information-table-cell-1">Pump 3</td>
+                                    <td class="pump-information-table-cell-2">:</td>
+                                    <td class="pump-information-table-cell-3">Air Pump</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- End of Sequence Input -->
+
+
+                <div class="home-window-content" id="seq-running-window">
+                    <!-- Start of Running Sequence Review -->
+                    <div class="content" id="running-sequence-container">
+                        <div class="running-sequence-table-header">
+                            <b>Sequence Table</b>
+                        </div>
+                        <div class="sequence-table-container">
+                            <table class="sequence-table">
+                                <thead class="sequence-table-header">
+                                    <tr class="sequence-table-header-row">
+                                        <th class="col-sequence">Seq</th>
+                                        <th>Pump</th>
+                                        <th>Dir</th>
+                                        <th>Flow (&microL/min)</th>
+                                        <th>Duration (s)</th>
+                                        <th>Volume (&microL)</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="sequence-table-list" id="run-seq-review">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- End of Running Sequence Review -->
+
+                    <!-- Start of Running Sequence Information -->
+                    <div class="content" id="sequence-information-container">
+                        <h3>Sequence Information</h3>
+                        <br>
+                        <div class="sequence-information-parameter">
+                            <table class="information-table-1">
+                                <tr>
+                                    <td class="information-table-1-cell-1">Sequence</td>
+                                    <td class="information-table-1-cell-2">:</td>
+                                    <td class="information-table-1-cell-3" id="sequence-information-sequence">0</td>
+                                    <td class="information-table-1-cell-4">Status</td>
+                                    <td class="information-table-1-cell-5">:</td>
+                                    <td class="information-table-1-cell-6" id="sequence-information-status">Paused</td>
+                                </tr>
+                                <tr>
+                                    <td>Pump</td>
+                                    <td>:</td>
+                                    <td id="sequence-information-pump">0</td>
+                                    <td>Direction</td>
+                                    <td>:</td>
+                                    <td id="sequence-information-direction">Forward
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="sequence-information-parameter">
+                            <div>Flowrate</div>
+                            <div style="padding-left: 50px;">
+                                <table class="information-table-2">
+                                    <tr>
+                                        <td class="information-table-2-cell-1">Setpoint</td>
+                                        <td class="information-table-2-cell-2">:</td>
+                                        <td class="information-table-2-cell-3" id="sequence-information-flowrate"></td>
+                                        <td class="information-table-2-cell-4">&microL/min</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Current Flowrate</dtdiv>
+                                        <td>:</td>
+                                        <td id="sequence-information-current-flowrate">0</td>
+                                        <td>&microL/min</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Average Flowrate</td>
+                                        <td>:</td>
+                                        <td id="sequence-information-average-flowrate"></td>
+                                        <td>&microL/min</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="sequence-information-parameter">
+                            <div>Duration</div>
+                            <div style="padding-left: 50px;">
+                                <table class="information-table-2">
+                                    <tr>
+                                        <td class="information-table-2-cell-1">Target time</td>
+                                        <td class="information-table-2-cell-2">:
+                                        <td class="information-table-2-cell-3" id="sequence-information-duration"></td>
+                                        <td class="information-table-2-cell-4"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Time elapsed</td>
+                                        <td>:</td>
+                                        <td id="sequence-information-time-elapsed">0:00:00</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Time Remaining</td>
+                                        <td>:
+                                        <td id="sequence-information-time-left"></td>
+                                        <td></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="sequence-information-parameter">
+                            <div>Volume</div>
+                            <div style="padding-left: 50px;">
+                                <table class="information-table-2">
+                                    <tr>
+                                        <td class="information-table-2-cell-1">Target Volume</td>
+                                        <td class="information-table-2-cell-2">:</td>
+                                        <td class="information-table-2-cell-3" id="sequence-information-volume"></td>
+                                        <td class="information-table-2-cell-4">&microL</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Volume Infused</td>
+                                        <td>:</td>
+                                        <td id="sequence-information-volume-infused">0</td>
+                                        <td>&microL</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Volume Left</td>
+                                        <td>:</td>
+                                        <td id="sequence-information-volume-left"></td>
+                                        <td>&microL</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="sequence-information-parameter">
+                            <table class="information-table-3">
+                                <tr>
+                                    <td class="information-table-3-cell-1">Total Run Time</td>
+                                    <td class="information-table-3-cell-2">:</td>
+                                    <td class="information-table-3-cell-3" id="sequence-information-total-time-elapsed">
+                                        0:00:00</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="sequence-information-button-container">
+                            <button type="button" class="button-type-1 sequence-information-button"
+                                id="start-stop-button" onclick="startStopButton()">Start</button>
+                            <button type="button" class="button-type-1 sequence-information-button" id="resetbutton"
+                                onclick="resetRunningSequence()">Reset</button>
+                            <button type="button" class="button-type-1 sequence-information-button" id="backbutton"
+                                onclick="closeSequenceInformationWindow()">Back</button>
+                        </div>
+                        <!-- Flowrate graph/chart -->
+                        <div class="sequence-information-parameter" style="position: relative; height: 200px;">
+                            <canvas id="flowrateChart"></canvas>
+                        </div>
+                    </div>
+                    <!-- End of Running Sequence Information -->
+                </div>
+            </div>
+
+
+
+            <div class="window content" id="settings-window">
+                <p style="display: inline-block; margin-inline-end: 20px;">Available Ports</p>
+                <button type="button" class="button-type-1" id="refresh-port"
+                    onclick="getAndShowPortList();">Refresh</button>
+                <br>
+                <br>
+                <div class="portholder" id="portholder">
+                    <ul class="portlist" id="portlist"></ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar" id="status-bar">
+            <div class="status-bar-rightcontainer">
+                <a title="Current PORT" class="status-port-text" id="status-port-text" href="#"
+                    onclick="sidebarMenuSelected(2); openPage(2)">
+                    No PORT connected</a>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+</html>
