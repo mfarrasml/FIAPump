@@ -50,7 +50,7 @@ Run the following code on command prompt.
 ```
 npm run make
 ```
-A folder named 'out' will be created, containing a distributable app, an app installer, and a zip file container the distributable.
+A folder named 'out' will be created, containing a distributable app, an app installer, and a zip file containing the distributable.
 ```
 ... (root folder)
 -> out
